@@ -112,10 +112,10 @@
             </div>
         </div>
     </div>
-    <script src="../js/three.min.js"></script>
+    <script src="./js/three.min.js"></script>
     <!-- <script type="module" src="../js/three.module.js"></script>  -->
-    <!-- <script type="module" src="../js/OrbitControls.js"></script>  -->
-    <script type="module" src="../js/TrackballControls.js"></script>
+    <script src="./js/OrbitControls.js"></script> 
+    <!-- <script type="module" src="./js/TrackballControls.js"></script> -->
     <script>
         // rendu
         var renderer = new THREE.WebGLRenderer();
@@ -157,27 +157,14 @@
         updateViewportSize();
 
         // Contrôle des mouvements de souris
-        // var controls = new THREE.OrbitControls(camera, renderer.domElement);
-        // controls.minDistance = 10;
-        // controls.maxDistance = 30; 
-        // import { TrackballControls } from '../js/TrackballControls.js';
-        // var dynamicallyImportPackage = async function() {
-        //     let TrackballControls
-        //     await import('../js/TrackballControls.js')
-        //         // you can now use the package in here
-        //         .then(module => {
-        //             TrackballControls = module.TrackballControls
-        //         })
-        //         .catch(e => console.log(e))
-
-        //     return TrackballControls
-        // }
-        // let TrackbackControls = dynamicallyImportPackage();
-        
-        var controls = new THREE.TrackballControls(camera, renderer.domElement);
+        var controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.minDistance = 10;
-        controls.maxDistance = 20;
-        controls.rotateSpeed = 15;
+        controls.maxDistance = 30;  
+        // let TrackbackControls = dynamicallyImportPackage();
+        // var controls = new THREE.TrackballControls(camera, renderer.domElement);
+        // controls.minDistance = 10;
+        // controls.maxDistance = 20;
+        // controls.rotateSpeed = 15;
 
         // function pour recentrer la caméra
         function CenterControls() {
