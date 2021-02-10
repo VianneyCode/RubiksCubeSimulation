@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset=utf-8>
+    <title>three.js app</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <style>
+        body {
+            margin: 0;
+            overflow: scroll;
+            line-height: 1.3;
+        }
+
+        #actions {
+            position: absolute;
+            z-index: 10;
+            padding: 10px;
+            width: 15%;
+        }
+
+        #actions input {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        #informations {
+            position: absolute;
+            z-index: 10;
+            padding: 10px;
+            width: 20%;
+            right: 0;
+        }
+
+        #melangeInput {
+            position: absolute;
+            z-index: 10;
+            width: 50%;
+            margin: auto;
+            margin-left: 17%;
+            margin-right: 20%;
+            margin-top: 10px;
+        }
+
+        #infos {
+            line-height: 1.3;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="actions">
+        <input type="button" id="showAxesButton" class="btn btn-primary" value="Afficher les axes"
+            onclick="ShowAxes()" />
+        <input type="button" id="centerCamera" class="btn btn-primary" value="Recentrer la camera"
+            onclick="CenterControls()" />
+        <br />
+        <br />
+        <input type="button" id="BackMove" class="btn btn-primary" value="B" onclick="MoveEvent('B')" />
+        <input type="button" id="BackMove" class="btn btn-primary" value="B'" onclick="MoveEvent('B\'')" />
+        <input type="button" id="FrontMove" class="btn btn-primary" value="F" onclick="MoveEvent('F')" />
+        <input type="button" id="FrontMove" class="btn btn-primary" value="F'" onclick="MoveEvent('F\'')" />
+        <input type="button" id="LeftMove" class="btn btn-primary" value="L" onclick="MoveEvent('L')" />
+        <input type="button" id="LeftMove" class="btn btn-primary" value="L'" onclick="MoveEvent('L\'')" />
+        <input type="button" id="RightMove" class="btn btn-primary" value="R" onclick="MoveEvent('R')" />
+        <input type="button" id="RightMove" class="btn btn-primary" value="R'" onclick="MoveEvent('R\'')" />
+        <input type="button" id="UpMove" class="btn btn-primary" value="U" onclick="MoveEvent('U')" />
+        <input type="button" id="UpMove" class="btn btn-primary" value="U'" onclick="MoveEvent('U\'')" />
+        <input type="button" id="DownMove" class="btn btn-primary" value="D" onclick="MoveEvent('D')" />
+        <input type="button" id="DownMove" class="btn btn-primary" value="D'" onclick="MoveEvent('D\'')" />
+    </div>
+    <div id="informations">
+        <h4>Informations sur les notations</h4>
+        <p>En rubik's cube, afin que tout le monde se comprenne, il y a des notations internationales. Celles-ci
+            sont assez simples mais il est tout de même important des les rappeler.</p>
+        <p>Chaque face possède sa propre lettre (en anglais): </p>
+        <ul>
+            <li>U : Up = Face du haut</li>
+            <li>D : Down = Face du bas</li>
+            <li>F : Front = Face de devant</li>
+            <li>B : Back = Face de derrière</li>
+            <li>L : Left = Face de gauche</li>
+            <li>R : Right = Face de droite</li>
+        </ul>
+        <p>Dans un mélange, un mouvement correspond à une lettre, qui se traduit par une rotation de 90° dans le sens
+            horaire. Pour le sens anti-horaire, on rajoute ' après la lettre. Si on souhaite faire 180° au lieu de 90°,
+            on rajoute 2 après la lettre.</p>
+        <p>
+            Exemple:
+        </p>
+        <ul>
+            <li>U': tourner la face du haut de 90° dans le sens anti-horaire</li>
+            <li>F2: tourner la face de devant de 180°</li>
+        </ul>
+        <div id="checkboxContainer">
+            <input type="checkbox" class="form-check-input" id="informationsDisplayer"
+                onclick="DisplayInformations()" />
+            <label for="informationsDisplayer">Afficher les informations</label>
+        </div>
+        <div class="alert alert-secondary" role="alert" id="infos">
+
+        </div>
+    </div>
+    <div id="melangeInput">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Mélange" id="inputMelange">
+            <div class="input-group-append">
+                <button class="btn btn-secondary" type="button" onclick="Melange()">Mélanger</button>
+                <button class="btn btn-danger" type="button" onclick="window.location.reload()">Réinitialiser</button>
+            </div>
+        </div>
+    </div>
+    <script src="../js/three.min.js"></script>
+    <!-- <script type="module" src="../js/three.module.js"></script>  -->
+    <!-- <script type="module" src="../js/OrbitControls.js"></script>  -->
+    <script type="module" src="../js/TrackballControls.js"></script>
+    <script>
+        // rendu
+        var renderer = new THREE.WebGLRenderer();
+        document.body.appendChild(renderer.domElement);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+        // camera
+        var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.5, 1000);
+        camera.position.z = 15;
+        camera.position.y = 5;
+        camera.position.x = 5;
+
+        // scene
+        var scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xd6d6d6);
+
+        // lumière  
+        var spotLightFront = new THREE.SpotLight(0x404040);
+        spotLightFront.position.set(3, 3, 3);
+        // spotLightFront.add(new THREE.AxesHelper(1.3));
+        spotLightFront.castShadow = true;
+        scene.add(spotLightFront);
+        var spotLightBack = new THREE.SpotLight(0x404040);
+        spotLightBack.position.set(-3, -3, -3);
+        // spotLightBack.add(new THREE.AxesHelper(1.3));
+        spotLightBack.castShadow = true;
+        scene.add(spotLightBack);
+
+        // Responsive: Mise à jour du rendu en fonction de la taille de la fenêtre
+        function updateViewportSize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix()
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.render(scene, camera);
+        }
+        window.addEventListener("resize", updateViewportSize);
+        updateViewportSize();
+
+        // Contrôle des mouvements de souris
+        // var controls = new THREE.OrbitControls(camera, renderer.domElement);
+        // controls.minDistance = 10;
+        // controls.maxDistance = 30; 
+        // import { TrackballControls } from '../js/TrackballControls.js';
+        // var dynamicallyImportPackage = async function() {
+        //     let TrackballControls
+        //     await import('../js/TrackballControls.js')
+        //         // you can now use the package in here
+        //         .then(module => {
+        //             TrackballControls = module.TrackballControls
+        //         })
+        //         .catch(e => console.log(e))
+
+        //     return TrackballControls
+        // }
+        // let TrackbackControls = dynamicallyImportPackage();
+        
+        var controls = new THREE.TrackballControls(camera, renderer.domElement);
+        controls.minDistance = 10;
+        controls.maxDistance = 20;
+        controls.rotateSpeed = 15;
+
+        // function pour recentrer la caméra
+        function CenterControls() {
+            controls.lookAt(new THREE.Vector3(0, 0, 0));
+        }
+
+
+        var pieces = [];
+        // fonction pour créer une pièce du rubik's cube
+        function CreateCubePiece(facesColors) {
+            var cubePieceGeometry = new THREE.BoxGeometry(1, 1, 1);
+            var rightColor = 0x000000;
+            var leftColor = 0x000000;
+            var frontColor = 0x000000;
+            var backColor = 0x000000;
+            var upColor = 0x000000;
+            var downColor = 0x000000;
+            if (facesColors.includes("R")) {
+                // rightColor = 0x00d111; // green
+                rightColor = 0xe00f00; // red
+            }
+            if (facesColors.includes("L")) {
+                // leftColor = 0x005eff; // blue
+                leftColor = 0xff9100; // orange
+            }
+            if (facesColors.includes("U")) {
+                // upColor = 0xfff700; // yellow
+                upColor = 0xffffff; // white
+            }
+            if (facesColors.includes("D")) {
+                // downColor = 0xffffff; // white
+                downColor = 0xfff700; // yellow
+            }
+            if (facesColors.includes("F")) {
+                // frontColor = 0xe00f00; // red
+                frontColor = 0x00d111; // green
+            }
+            if (facesColors.includes("B")) {
+                // backColor = 0xff9100; // orange
+                backColor = 0x005eff; // blue
+            }
+            cubePieceGeometry.faces[0].color = new THREE.Color(rightColor); // green      Right
+            cubePieceGeometry.faces[1].color = new THREE.Color(rightColor); // green      Right
+            cubePieceGeometry.faces[2].color = new THREE.Color(leftColor);  // blue       Left
+            cubePieceGeometry.faces[3].color = new THREE.Color(leftColor);  // blue       Left
+            cubePieceGeometry.faces[4].color = new THREE.Color(upColor);    // yellow     Up
+            cubePieceGeometry.faces[5].color = new THREE.Color(upColor);    // yellow     Up
+            cubePieceGeometry.faces[6].color = new THREE.Color(downColor);    // white      Down
+            cubePieceGeometry.faces[7].color = new THREE.Color(downColor);    // white      Down
+            cubePieceGeometry.faces[8].color = new THREE.Color(frontColor); // red        Front
+            cubePieceGeometry.faces[9].color = new THREE.Color(frontColor); // red        Front
+            cubePieceGeometry.faces[10].color = new THREE.Color(backColor); // orange     Back
+            cubePieceGeometry.faces[11].color = new THREE.Color(backColor); // orange     Back
+            var cubePiece = new THREE.Mesh(cubePieceGeometry, new THREE.MeshBasicMaterial({ color: 0xffffff, vertexColors: true }));
+            cubePiece.receiveShadow = true;
+            scene.add(cubePiece);
+            pieces.push(cubePiece);
+            cubePiece.translateX(0.5);
+            // cubePiece.add(new THREE.AxesHelper(1.5));
+            return cubePiece;
+        }
+
+        // enum pour les différents types de pièce du rubik's cube
+        const cubeType = {
+            Center: 1,
+            Corner: 2,
+            Edge: 3,
+            Other: 4
+        }
+
+        //#region Création et positionnement des pièces du rubik's cube
+        var cubePiece1 = CreateCubePiece("");
+        cubePiece1.position.set(0, 0, 0);
+        cubePiece1.name = "cubePiece1";
+        cubePiece1.cubeType = cubeType.Other;
+        var cubePiece2 = CreateCubePiece("B");
+        cubePiece2.position.set(0, 0, -1.02); // Back
+        cubePiece2.name = "cubePiece2";
+        cubePiece2.cubeType = cubeType.Center;
+        var cubePiece3 = CreateCubePiece("F");
+        cubePiece3.position.set(0, 0, 1.02); // Front
+        cubePiece3.name = "cubePiece3";
+        cubePiece3.cubeType = cubeType.Center;
+        var cubePiece4 = CreateCubePiece("RF");
+        cubePiece4.position.set(1.02, 0, 1.02);
+        cubePiece4.name = "cubePiece4";
+        cubePiece4.cubeType = cubeType.Edge;
+        var cubePiece5 = CreateCubePiece("LF");
+        cubePiece5.position.set(-1.02, 0, 1.02);
+        cubePiece5.name = "cubePiece5";
+        cubePiece5.cubeType = cubeType.Edge;
+        var cubePiece6 = CreateCubePiece("L");
+        cubePiece6.position.set(-1.02, 0, 0); // Left
+        cubePiece6.name = "cubePiece6";
+        cubePiece6.cubeType = cubeType.Center;
+        var cubePiece7 = CreateCubePiece("R");
+        cubePiece7.position.set(1.02, 0, 0); // Right
+        cubePiece7.name = "cubePiece7";
+        cubePiece7.cubeType = cubeType.Center;
+        var cubePiece8 = CreateCubePiece("RB");
+        cubePiece8.position.set(1.02, 0, -1.02);
+        cubePiece8.name = "cubePiece8";
+        cubePiece8.cubeType = cubeType.Edge;
+        var cubePiece9 = CreateCubePiece("LB");
+        cubePiece9.position.set(-1.02, 0, -1.02);
+        cubePiece9.name = "cubePiece9";
+        cubePiece9.cubeType = cubeType.Edge;
+        var cubePiece10 = CreateCubePiece("U");
+        cubePiece10.position.set(0, 1.02, 0); // Up
+        cubePiece10.name = "cubePiece10";
+        cubePiece10.cubeType = cubeType.Center;
+        var cubePiece11 = CreateCubePiece("UB");
+        cubePiece11.position.set(0, 1.02, -1.02);
+        cubePiece11.name = "cubePiece11";
+        cubePiece11.cubeType = cubeType.Edge;
+        var cubePiece12 = CreateCubePiece("UF");
+        cubePiece12.position.set(0, 1.02, 1.02);
+        cubePiece12.name = "cubePiece12";
+        cubePiece12.cubeType = cubeType.Edge;
+        var cubePiece13 = CreateCubePiece("RFU");
+        cubePiece13.position.set(1.02, 1.02, 1.02);
+        cubePiece13.name = "cubePiece13";
+        cubePiece13.cubeType = cubeType.Corner;
+        var cubePiece14 = CreateCubePiece("LFU");
+        cubePiece14.position.set(-1.02, 1.02, 1.02);
+        cubePiece14.name = "cubePiece14";
+        cubePiece14.cubeType = cubeType.Corner;
+        var cubePiece15 = CreateCubePiece("LU");
+        cubePiece15.position.set(-1.02, 1.02, 0);
+        cubePiece15.name = "cubePiece15";
+        cubePiece15.cubeType = cubeType.Edge;
+        var cubePiece16 = CreateCubePiece("RU");
+        cubePiece16.position.set(1.02, 1.02, 0);
+        cubePiece16.name = "cubePiece16";
+        cubePiece16.cubeType = cubeType.Edge;
+        var cubePiece17 = CreateCubePiece("RBU");
+        cubePiece17.position.set(1.02, 1.02, -1.02);
+        cubePiece17.name = "cubePiece17";
+        cubePiece17.cubeType = cubeType.Corner;
+        var cubePiece18 = CreateCubePiece("LBU");
+        cubePiece18.position.set(-1.02, 1.02, -1.02);
+        cubePiece18.name = "cubePiece18";
+        cubePiece18.cubeType = cubeType.Corner;
+        var cubePiece19 = CreateCubePiece("D");
+        cubePiece19.position.set(0, -1.02, 0); // Down
+        cubePiece19.name = "cubePiece19";
+        cubePiece19.cubeType = cubeType.Center;
+        var cubePiece20 = CreateCubePiece("BD");
+        cubePiece20.position.set(0, -1.02, -1.02);
+        cubePiece20.name = "cubePiece20";
+        cubePiece20.cubeType = cubeType.Edge;
+        var cubePiece21 = CreateCubePiece("FD");
+        cubePiece21.position.set(0, -1.02, 1.02);
+        cubePiece21.name = "cubePiece21";
+        cubePiece21.cubeType = cubeType.Edge;
+        var cubePiece22 = CreateCubePiece("RFD");
+        cubePiece22.position.set(1.02, -1.02, 1.02);
+        cubePiece22.name = "cubePiece22";
+        cubePiece22.cubeType = cubeType.Corner;
+        var cubePiece23 = CreateCubePiece("LFD");
+        cubePiece23.position.set(-1.02, -1.02, 1.02);
+        cubePiece23.name = "cubePiece23";
+        cubePiece23.cubeType = cubeType.Corner;
+        var cubePiece24 = CreateCubePiece("LD");
+        cubePiece24.position.set(-1.02, -1.02, 0);
+        cubePiece24.name = "cubePiece24";
+        cubePiece24.cubeType = cubeType.Edge;
+        var cubePiece25 = CreateCubePiece("RD");
+        cubePiece25.position.set(1.02, -1.02, 0);
+        cubePiece25.name = "cubePiece25";
+        cubePiece25.cubeType = cubeType.Edge;
+        var cubePiece26 = CreateCubePiece("RBD");
+        cubePiece26.position.set(1.02, -1.02, -1.02);
+        cubePiece26.name = "cubePiece26";
+        cubePiece26.cubeType = cubeType.Corner;
+        var cubePiece27 = CreateCubePiece("LBD");
+        cubePiece27.position.set(-1.02, -1.02, -1.02);
+        cubePiece27.name = "cubePiece27";
+        cubePiece27.cubeType = cubeType.Corner;
+        //#endregion
+
+        //#region Group definition for cube face rotation
+        var BackGroup = new THREE.Group();
+        BackGroup.name = "BackGroup";
+        // BackGroup.add(cubePiece2);
+        scene.add(BackGroup);
+        var FrontGroup = new THREE.Group();
+        FrontGroup.name = "FrontGroup";
+        // FrontGroup.add(cubePiece3);
+        scene.add(FrontGroup);
+        var LeftGroup = new THREE.Group();
+        LeftGroup.name = "LeftGroup";
+        // LeftGroup.add(cubePiece6);
+        scene.add(LeftGroup);
+        var RightGroup = new THREE.Group();
+        RightGroup.name = "RightGroup";
+        // RightGroup.add(cubePiece7);
+        scene.add(RightGroup);
+        var UpGroup = new THREE.Group();
+        UpGroup.name = "UpGroup";
+        // UpGroup.add(cubePiece10);
+        scene.add(UpGroup);
+        var DownGroup = new THREE.Group();
+        DownGroup.name = "DownGroup";
+        // DownGroup.add(cubePiece19);
+        scene.add(DownGroup);
+        //#endregion
+
+        //#region list position group
+        var BackListPosition = [];
+        BackListPosition.push(new THREE.Vector3(1.02, 0, -1.02));
+        BackListPosition.push(new THREE.Vector3(-1.02, 0, -1.02));
+        BackListPosition.push(new THREE.Vector3(0, 1.02, -1.02));
+        BackListPosition.push(new THREE.Vector3(1.02, 1.02, -1.02));
+        BackListPosition.push(new THREE.Vector3(-1.02, 1.02, -1.02));
+        BackListPosition.push(new THREE.Vector3(0, -1.02, -1.02));
+        BackListPosition.push(new THREE.Vector3(1.02, -1.02, -1.02));
+        BackListPosition.push(new THREE.Vector3(-1.02, -1.02, -1.02));
+        BackListPosition.push(new THREE.Vector3(0, 0, -1.02));
+        var FrontListPosition = [];
+        FrontListPosition.push(new THREE.Vector3(0, 0, 1.02));
+        FrontListPosition.push(new THREE.Vector3(1.02, 0, 1.02));
+        FrontListPosition.push(new THREE.Vector3(-1.02, 0, 1.02));
+        FrontListPosition.push(new THREE.Vector3(0, 1.02, 1.02));
+        FrontListPosition.push(new THREE.Vector3(1.02, 1.02, 1.02));
+        FrontListPosition.push(new THREE.Vector3(-1.02, 1.02, 1.02));
+        FrontListPosition.push(new THREE.Vector3(0, -1.02, 1.02));
+        FrontListPosition.push(new THREE.Vector3(1.02, -1.02, 1.02));
+        FrontListPosition.push(new THREE.Vector3(-1.02, -1.02, 1.02));
+        var UpListPosition = [];
+        UpListPosition.push(new THREE.Vector3(0, 1.02, 0));
+        UpListPosition.push(new THREE.Vector3(0, 1.02, -1.02));
+        UpListPosition.push(new THREE.Vector3(0, 1.02, 1.02));
+        UpListPosition.push(new THREE.Vector3(1.02, 1.02, 1.02));
+        UpListPosition.push(new THREE.Vector3(-1.02, 1.02, 1.02));
+        UpListPosition.push(new THREE.Vector3(-1.02, 1.02, 0));
+        UpListPosition.push(new THREE.Vector3(1.02, 1.02, 0));
+        UpListPosition.push(new THREE.Vector3(1.02, 1.02, -1.02));
+        UpListPosition.push(new THREE.Vector3(-1.02, 1.02, -1.02));
+        var DownListPosition = [];
+        DownListPosition.push(new THREE.Vector3(0, -1.02, 0));
+        DownListPosition.push(new THREE.Vector3(0, -1.02, -1.02));
+        DownListPosition.push(new THREE.Vector3(0, -1.02, 1.02));
+        DownListPosition.push(new THREE.Vector3(1.02, -1.02, 1.02));
+        DownListPosition.push(new THREE.Vector3(-1.02, -1.02, 1.02));
+        DownListPosition.push(new THREE.Vector3(-1.02, -1.02, 0));
+        DownListPosition.push(new THREE.Vector3(1.02, -1.02, 0));
+        DownListPosition.push(new THREE.Vector3(1.02, -1.02, -1.02));
+        DownListPosition.push(new THREE.Vector3(-1.02, -1.02, -1.02));
+        var LeftListPosition = [];
+        LeftListPosition.push(new THREE.Vector3(-1.02, 0, 0));
+        LeftListPosition.push(new THREE.Vector3(-1.02, 0, -1.02));
+        LeftListPosition.push(new THREE.Vector3(-1.02, 1.02, 1.02));
+        LeftListPosition.push(new THREE.Vector3(-1.02, 1.02, 0));
+        LeftListPosition.push(new THREE.Vector3(-1.02, 1.02, -1.02));
+        LeftListPosition.push(new THREE.Vector3(-1.02, -1.02, 1.02));
+        LeftListPosition.push(new THREE.Vector3(-1.02, -1.02, 0));
+        LeftListPosition.push(new THREE.Vector3(-1.02, -1.02, -1.02));
+        LeftListPosition.push(new THREE.Vector3(-1.02, 0, 1.02));
+        var RightListPosition = [];
+        RightListPosition.push(new THREE.Vector3(1.02, 0, 0));
+        RightListPosition.push(new THREE.Vector3(1.02, 0, 1.02));
+        RightListPosition.push(new THREE.Vector3(1.02, 0, -1.02));
+        RightListPosition.push(new THREE.Vector3(1.02, 1.02, 1.02));
+        RightListPosition.push(new THREE.Vector3(1.02, 1.02, 0));
+        RightListPosition.push(new THREE.Vector3(1.02, 1.02, -1.02));
+        RightListPosition.push(new THREE.Vector3(1.02, -1.02, 1.02));
+        RightListPosition.push(new THREE.Vector3(1.02, -1.02, 0));
+        RightListPosition.push(new THREE.Vector3(1.02, -1.02, -1.02));
+        //#endregion  
+
+        //#region list moves and group
+        var listMoves = {
+            "F": -(Math.PI / 2),
+            "F'": Math.PI / 2,
+            "B": Math.PI / 2,
+            "B'": -(Math.PI / 2),
+            "U": -(Math.PI / 2),
+            "U'": Math.PI / 2,
+            "D": Math.PI / 2,
+            "D'": -(Math.PI / 2),
+            "L": Math.PI / 2,
+            "L'": -(Math.PI / 2),
+            "R": -(Math.PI / 2),
+            "R'": Math.PI / 2
+        };
+        var listGroup = {
+            "F": FrontGroup,
+            "B": BackGroup,
+            "U": UpGroup,
+            "D": DownGroup,
+            "L": LeftGroup,
+            "R": RightGroup,
+        };
+        //#endregion
+
+        // fonction pour créer un groupe à la volée
+        function GroupFace(face) {
+            switch (face) {
+                case "B":
+                    pieces.forEach(element => {
+                        BackListPosition.forEach(position => {
+                            if (element.position.x == position.x &&
+                                element.position.y == position.y &&
+                                element.position.z == position.z) {
+                                BackGroup.add(element);
+                            }
+                        });
+                    });
+                    break;
+                case "F":
+                    pieces.forEach(element => {
+                        FrontListPosition.forEach(position => {
+                            if (element.position.x == position.x &&
+                                element.position.y == position.y &&
+                                element.position.z == position.z) {
+                                FrontGroup.add(element);
+                            }
+                        });
+                    });
+                    break;
+                case "U":
+                    pieces.forEach(element => {
+                        UpListPosition.forEach(position => {
+                            if (element.position.x == position.x &&
+                                element.position.y == position.y &&
+                                element.position.z == position.z) {
+                                UpGroup.add(element);
+                            }
+                        });
+                    });
+                    break;
+                case "D":
+                    pieces.forEach(element => {
+                        DownListPosition.forEach(position => {
+                            if (element.position.x == position.x &&
+                                element.position.y == position.y &&
+                                element.position.z == position.z) {
+                                DownGroup.add(element);
+                            }
+                        });
+                    });
+                    break;
+                case "R":
+                    pieces.forEach(element => {
+                        RightListPosition.forEach(position => {
+                            if (element.position.x == position.x &&
+                                element.position.y == position.y &&
+                                element.position.z == position.z) {
+                                RightGroup.add(element);
+                            }
+                        });
+                    });
+                    break;
+                case "L":
+                    pieces.forEach(element => {
+                        LeftListPosition.forEach(position => {
+                            if (element.position.x == position.x &&
+                                element.position.y == position.y &&
+                                element.position.z == position.z) {
+                                LeftGroup.add(element);
+                            }
+                        });
+                    });
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // fonction de mise à jour de la position et de la rotation de toutes les pièces du cube
+        function UpdateCube() {
+            pieces.forEach(element => {
+                if (BackGroup.children.includes(element) && (lastMove == "B" || lastMove == "B'")) {
+                    UpdatePositionPiece(element);
+                    BackGroup.remove(element);
+                    UpdateRotationPiece(element);
+                } else if (FrontGroup.children.includes(element) && (lastMove == "F" || lastMove == "F'")) {
+                    UpdatePositionPiece(element);
+                    FrontGroup.remove(element);
+                    UpdateRotationPiece(element);
+                } else if (UpGroup.children.includes(element) && (lastMove == "U" || lastMove == "U'")) {
+                    UpdatePositionPiece(element);
+                    UpGroup.remove(element);
+                    UpdateRotationPiece(element);
+                } else if (DownGroup.children.includes(element) && (lastMove == "D" || lastMove == "D'")) {
+                    UpdatePositionPiece(element);
+                    DownGroup.remove(element);
+                    UpdateRotationPiece(element);
+                } else if (LeftGroup.children.includes(element) && (lastMove == "L" || lastMove == "L'")) {
+                    UpdatePositionPiece(element);
+                    LeftGroup.remove(element);
+                    UpdateRotationPiece(element);
+                } else if (RightGroup.children.includes(element) && (lastMove == "R" || lastMove == "R'")) {
+                    UpdatePositionPiece(element);
+                    RightGroup.remove(element);
+                    UpdateRotationPiece(element);
+                }
+                scene.add(element);
+            });
+            ResetGroupRotation();
+        }
+
+        spotLightFront.lookAt(cubePiece1.position);
+        spotLightBack.lookAt(cubePiece1.position);
+
+        // fonction d'affichage des axes du rubik's cube
+        var axesDisplayed = false;
+        var cubeAxis = new THREE.AxesHelper(5);
+        function ShowAxes() {
+            if (axesDisplayed) {
+                axesDisplayed = false;
+                cubePiece1.remove(cubeAxis);
+                document.getElementById("showAxesButton").value = "Afficher les axes";
+            } else {
+                axesDisplayed = true;
+                cubePiece1.add(cubeAxis);
+                document.getElementById("showAxesButton").value = "Cacher les axes";
+            }
+        }
+
+        // onclick des différents boutons de mouvement
+        var anAnimationHaveToStart = "";
+        var movement = "";
+        function MoveEvent(move) {
+            movement = move;
+            anAnimationHaveToStart = move;
+        }
+
+
+        var raycaster = new THREE.Raycaster();
+        function getSelectionneLePlusProche(position) {
+            raycaster.setFromCamera(position, camera);
+            var selectionnes = raycaster.intersectObjects(pieces);
+            if (selectionnes.length) {
+                return selectionnes[0].object;
+            }
+        }
+        function onMouseClick(event) {
+            var position = new THREE.Vector2();
+            var domRect = renderer.domElement.getBoundingClientRect();
+            position.x = (event.clientX / domRect.width) * 2 - 1 + domRect.left;
+            position.y = - (event.clientY / domRect.height) * 2 + 1 + domRect.top;
+
+            var object = getSelectionneLePlusProche(position);
+            // console.log(object);
+            if (object != null) {
+                var infos = document.getElementById("infos");
+                var quaternion = new THREE.Quaternion();
+                object.getWorldQuaternion(quaternion);
+                var rotation = new THREE.Euler().setFromQuaternion(quaternion);
+                infos.innerHTML = "<p><b>Nom:</b> " + object.name + "</p>" +
+                    "<p><b>position:</b> x=" + object.position.x + ", y=" + object.position.y + ", z=" + object.position.z + "</p>" +
+                    "<p><b>rotation:</b> x=" + Math.round(THREE.Math.radToDeg(rotation.x)) + ", y=" + Math.round(THREE.Math.radToDeg(rotation.y)) + ", z=" + Math.round(THREE.Math.radToDeg(rotation.z));
+            }
+        }
+        renderer.domElement.addEventListener('click', onMouseClick);
+        function DisplayInformations() {
+            var checkBox = document.getElementById("informationsDisplayer");
+            var infos = document.getElementById("infos");
+            if (checkBox.checked == true) {
+                infos.rem
+                infos.style.display = "block";
+            } else {
+                infos.style.display = "none";
+            }
+        }
+
+
+        var lastMove = "";
+        var cubeUpdate = false;
+        function UpdatePositionPiece(element) {
+            var vector = new THREE.Vector3();
+            element.getWorldPosition(vector);
+            element.position.set(Math.round(vector.x * 100) / 100, Math.round(vector.y * 100) / 100, Math.round(vector.z * 100) / 100);
+            // console.log("x: " + element.position.x + ", y: " + element.position.y + ", z: " + element.position.z);
+        }
+
+        function UpdateRotationPiece(element) {
+            // element.rotation.order = 'XYZ';
+            if (lastMove == "B") {
+                // var angle = element.rotation.z + Math.PI / 2;
+                // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
+                //     angle = 0;
+                // }
+                element.rotateOnAxis(new THREE.Vector3(0, 0, 1), Math.PI / 2);
+                // element.rotation.set(element.rotation.x, element.rotation.y, angle);
+            } else if (lastMove == "B'") {
+                // var angle = element.rotation.z - Math.PI / 2;
+                // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
+                //     angle = 0;   
+                // }
+                element.rotateOnAxis(new THREE.Vector3(0, 0, 1), -Math.PI / 2);
+                // element.rotation.set(element.rotation.x, element.rotation.y, angle);
+            } else if (lastMove == "F") {
+                // var angle = element.rotation.z - Math.PI / 2;
+                // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
+                //     angle = 0;
+                // }  
+                element.rotateOnAxis(new THREE.Vector3(0, 0, 1), -Math.PI / 2);
+                // element.rotation.set(element.rotation.x, element.rotation.y, angle);
+            } else if (lastMove == "F'") {
+                // var angle = element.rotation.z + Math.PI / 2;
+                // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
+                //     angle = 0;
+                // }
+                element.rotateOnAxis(new THREE.Vector3(0, 0, 1), Math.PI / 2);
+                // element.rotation.set(element.rotation.x, element.rotation.y, angle);
+            } else if (lastMove == "U") {
+                // var angle = element.rotation.y - Math.PI / 2;
+                // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
+                //     angle = 0;
+                // }
+                element.rotateOnAxis(new THREE.Vector3(0, 1, 0), -Math.PI / 2);
+                // element.rotation.set(element.rotation.x, angle, element.rotation.z);
+            } else if (lastMove == "U'") {
+                // var angle = element.rotation.y + Math.PI / 2;
+                // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
+                //     angle = 0;
+                // }
+                element.rotateOnAxis(new THREE.Vector3(0, 1, 0), Math.PI / 2);
+                // element.rotation.set(element.rotation.x, angle, element.rotation.z);
+            } else if (lastMove == "D") {
+                // var angle = element.rotation.y + Math.PI / 2;
+                // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
+                //     angle = 0;
+                // }
+                element.rotateOnAxis(new THREE.Vector3(0, 1, 0), Math.PI / 2);
+                // element.rotation.set(element.rotation.x, angle, element.rotation.z);
+            } else if (lastMove == "D'") {
+                // var angle = element.rotation.y - Math.PI / 2;
+                // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
+                //     angle = 0;
+                // }
+                element.rotateOnAxis(new THREE.Vector3(0, 1, 0), -Math.PI / 2);
+                // element.rotation.set(element.rotation.x, angle, element.rotation.z);
+            } else if (lastMove == "R") {
+                // var angle = element.rotation.x - Math.PI / 2;
+                // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
+                //     angle = 0;
+                // }
+                element.rotateOnAxis(new THREE.Vector3(1, 0, 0), -Math.PI / 2);
+                // element.rotation.set(angle, element.rotation.y, element.rotation.z);
+            } else if (lastMove == "R'") {
+                // var angle = element.rotation.x + Math.PI / 2;
+                // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
+                //     angle = 0;
+                // }
+                element.rotateOnAxis(new THREE.Vector3(1, 0, 0), Math.PI / 2);
+                // element.rotation.set(angle, element.rotation.y, element.rotation.z);
+            } else if (lastMove == "L") {
+                // var angle = element.rotation.x + Math.PI / 2;
+                // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
+                //     angle = 0;
+                // }
+                element.rotateOnAxis(new THREE.Vector3(1, 0, 0), Math.PI / 2);
+                // element.rotation.set(angle, element.rotation.y, element.rotation.z);
+            } else if (lastMove == "L'") {
+                // var angle = element.rotation.x - Math.PI / 2;
+                // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
+                //     angle = 0;
+                // }
+                element.rotateOnAxis(new THREE.Vector3(1, 0, 0), -Math.PI / 2);
+                // element.rotation.set(angle, element.rotation.y, element.rotation.z);
+            }
+            // console.log("x: " + THREE.Math.radToDeg(element.rotation.x) + ", y: " + THREE.Math.radToDeg(element.rotation.y) + ", z: " + THREE.Math.radToDeg(element.rotation.z));
+        }
+
+        function ResetGroupRotation() {
+            BackGroup.rotation.set(0, 0, 0);
+            UpGroup.rotation.set(0, 0, 0);
+            FrontGroup.rotation.set(0, 0, 0);
+            DownGroup.rotation.set(0, 0, 0);
+            LeftGroup.rotation.set(0, 0, 0);
+            RightGroup.rotation.set(0, 0, 0);
+        }
+
+        function IncrementerRotation() {
+            switch (movement) {
+                case "B":
+                    if (listGroup[movement].rotation.z >= listMoves[movement]) {
+                        listGroup[movement].rotation.z = listMoves[movement];
+                        animationIsRunning = false;
+                    } else {
+                        listGroup[movement].rotation.z += vitesse;
+                    }
+                    break;
+                case "B'":
+                    if (listGroup[movement.replace('\'', '')].rotation.z <= listMoves[movement]) {
+                        listGroup[movement.replace('\'', '')].rotation.z = listMoves[movement];
+                        animationIsRunning = false;
+                    } else {
+                        listGroup[movement.replace('\'', '')].rotation.z -= vitesse;
+                    }
+                    break;
+                case "F":
+                    if (listGroup[movement].rotation.z <= listMoves[movement]) {
+                        listGroup[movement].rotation.z = listMoves[movement];
+                        animationIsRunning = false;
+                    } else {
+                        listGroup[movement].rotation.z -= vitesse;
+                    }
+                    break;
+                case "F'":
+                    if (listGroup[movement.replace('\'', '')].rotation.z >= listMoves[movement]) {
+                        listGroup[movement.replace('\'', '')].rotation.z = listMoves[movement];
+                        animationIsRunning = false;
+                    } else {
+                        listGroup[movement.replace('\'', '')].rotation.z += vitesse;
+                    }
+                    break;
+                case "U":
+                    if (listGroup[movement].rotation.y <= listMoves[movement]) {
+                        listGroup[movement].rotation.y = listMoves[movement];
+                        animationIsRunning = false;
+                    } else {
+                        listGroup[movement].rotation.y -= vitesse;
+                    }
+                    break;
+                case "U'":
+                    if (listGroup[movement.replace('\'', '')].rotation.y >= listMoves[movement]) {
+                        listGroup[movement.replace('\'', '')].rotation.y = listMoves[movement];
+                        animationIsRunning = false;
+                    } else {
+                        listGroup[movement.replace('\'', '')].rotation.y += vitesse;
+                    }
+                    break;
+                case "D":
+                    if (listGroup[movement].rotation.y >= listMoves[movement]) {
+                        listGroup[movement].rotation.y = listMoves[movement];
+                        animationIsRunning = false;
+                    } else {
+                        listGroup[movement].rotation.y += vitesse;
+                    }
+                    break;
+                case "D'":
+                    if (listGroup[movement.replace('\'', '')].rotation.y <= listMoves[movement]) {
+                        listGroup[movement.replace('\'', '')].rotation.y = listMoves[movement];
+                        animationIsRunning = false;
+                    } else {
+                        listGroup[movement.replace('\'', '')].rotation.y -= vitesse;
+                    }
+                    break;
+                case "L":
+                    if (listGroup[movement].rotation.x >= listMoves[movement]) {
+                        listGroup[movement].rotation.x = listMoves[movement];
+                        animationIsRunning = false;
+                    } else {
+                        listGroup[movement].rotation.x += vitesse;
+                    }
+                    break;
+                case "L'":
+                    if (listGroup[movement.replace('\'', '')].rotation.x <= listMoves[movement]) {
+                        listGroup[movement.replace('\'', '')].rotation.x = listMoves[movement];
+                        animationIsRunning = false;
+                    } else {
+                        listGroup[movement.replace('\'', '')].rotation.x -= vitesse;
+                    }
+                    break;
+                case "R":
+                    if (listGroup[movement].rotation.x <= listMoves[movement]) {
+                        listGroup[movement].rotation.x = listMoves[movement];
+                        animationIsRunning = false;
+                    } else {
+                        listGroup[movement].rotation.x -= vitesse;
+                    }
+                    break;
+                case "R'":
+                    if (listGroup[movement.replace('\'', '')].rotation.x >= listMoves[movement]) {
+                        listGroup[movement.replace('\'', '')].rotation.x = listMoves[movement];
+                        animationIsRunning = false;
+                    } else {
+                        listGroup[movement.replace('\'', '')].rotation.x += vitesse;
+                    }
+                    break;
+                default:
+                    animationIsRunning = false;
+                    break;
+            }
+        }
+
+        function FaireRotation() {
+            if (anAnimationHaveToStart != "") {
+                GroupFace(movement.replace('\'', ''));
+                animationIsRunning = true;
+                anAnimationHaveToStart = "";
+                cubeUpdate = false;
+                // console.log("Start animation");
+            } else {
+                if (animationIsRunning) {
+                    IncrementerRotation();
+                    // console.log("Animation is running");
+                } else {
+                    if (!cubeUpdate) {
+                        lastMove = movement;
+                        movement = "";
+                        UpdateCube();
+                        if (isMelange) {
+                            index++;
+                            nextMove = true;
+                        } else {
+                            index = 0;
+                        }
+                    }
+                }
+            }
+        }
+
+        var melange = [];
+        var movePossible = ["F", "B", "U", "D", "R", "L", "F'", "B'", "U'", "D'", "R'", "L'", "F2", "B2", "U2", "D2", "R2", "L2"];
+        var index = 0;
+        var isMelange = false;
+        var nextMove = false;
+        function Melange() {
+            var inputMelange = document.getElementById("inputMelange");
+            var scramble = inputMelange.value.split(" ");
+            for (var i = 0; i < scramble.length; i++) {
+                if (movePossible.includes(scramble[i])) {
+                    if (scramble[i].includes("2")) {
+                        melange.push(scramble[i][0]);
+                        melange.push(scramble[i][0]);
+                    } else {
+                        melange.push(scramble[i]);
+                    }
+                } else {
+                    alert("Mauvais format de mélange !");
+                    melange = [];
+                    isMelange = false;
+                    nextMove = false;
+                    break;
+                }
+            }
+            isMelange = true;
+            nextMove = true;
+        }
+
+        var vitesse = 0.1;
+        var animationIsRunning = false;
+        function animate(t) {
+            if (melange.length > 0 && nextMove) {
+                if (isMelange && index < melange.length) {
+                    anAnimationHaveToStart = melange[index];
+                    movement = melange[index];
+                    // console.log("1er move de mélange");
+                    nextMove = false;
+                } else {
+                    melange = [];
+                    isMelange = false;
+                }
+            }
+            FaireRotation();
+            controls.update();
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+
+</html>
