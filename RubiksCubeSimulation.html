@@ -3,7 +3,7 @@
 
 <head>
     <meta charset=utf-8>
-    <title>three.js app</title>
+    <title>Rubik's cube Simulation</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
         integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <style>
@@ -160,7 +160,8 @@
         // Contrôle des mouvements de souris
         var controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.minDistance = 10;
-        controls.maxDistance = 30;
+        controls.maxDistance = 25;
+        controls.enablePan = false;
         // let TrackbackControls = dynamicallyImportPackage();
         // var controls = new THREE.TrackballControls(camera, renderer.domElement);
         // controls.minDistance = 10;
@@ -169,9 +170,8 @@
 
         // function pour recentrer la caméra
         function CenterControls() {
-            controls.lookAt(new THREE.Vector3(0, 0, 0));
+            camera.position.set(5,5,15);
         }
-
 
         var pieces = [];
         // fonction pour créer une pièce du rubik's cube
@@ -521,7 +521,7 @@
         var anAnimationHaveToStart = "";
         var movement = "";
         var btns = document.getElementsByClassName("MoveBtn");
-        var listGroup = [];
+        var listBoxHelper = [];
         function MoveEvent(move) {
             removeBoxesHelper();
             movement = move;
@@ -859,8 +859,8 @@
         }
  
         function removeBoxesHelper(){ 
-            if(listGroup != null && listGroup.length > 0){
-                listGroup.forEach(element => {
+            if(listBoxHelper != null && listBoxHelper.length > 0){
+                listBoxHelper.forEach(element => {
                     scene.remove(element);
                 }); 
             }
@@ -870,7 +870,7 @@
             btns[i].addEventListener("mouseenter", function( event ) {  
                 GroupFace(event.target.attributes["value"].value.replace('\'', '')).children.forEach(element => {
                     var boxHelper = new THREE.BoxHelper(element, 0xffff00 );
-                    listGroup.push(boxHelper);
+                    listBoxHelper.push(boxHelper);
                     scene.add(boxHelper);
                 });
             });
