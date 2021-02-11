@@ -1,6 +1,6 @@
 # Bienvenue sur le simulateur de Rubik's cube
 
-![image d'un rubik's cube](cube.png)
+![image d'un rubik's cube](image/cube.png)
 
 Démo: https://rubiks-cube-simulation.vercel.app/
 
