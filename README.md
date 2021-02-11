@@ -2,6 +2,8 @@
 
 ![image d'un rubik's cube](cube.png)
 
+Démo: https://rubiks-cube-simulation.vercel.app/RubiksCubeSimulation.html
+
 ## Qu'est-ce que c'est ?
 Un simulateur de rubik's cube en 3D que j'ai fait dans le cadre d'un TP.
 
