@@ -58,18 +58,18 @@
             onclick="CenterControls()" />
         <br />
         <br />
-        <input type="button" id="BackMove" class="btn btn-primary" value="B" onclick="MoveEvent('B')" />
-        <input type="button" id="BackMove" class="btn btn-primary" value="B'" onclick="MoveEvent('B\'')" />
-        <input type="button" id="FrontMove" class="btn btn-primary" value="F" onclick="MoveEvent('F')" />
-        <input type="button" id="FrontMove" class="btn btn-primary" value="F'" onclick="MoveEvent('F\'')" />
-        <input type="button" id="LeftMove" class="btn btn-primary" value="L" onclick="MoveEvent('L')" />
-        <input type="button" id="LeftMove" class="btn btn-primary" value="L'" onclick="MoveEvent('L\'')" />
-        <input type="button" id="RightMove" class="btn btn-primary" value="R" onclick="MoveEvent('R')" />
-        <input type="button" id="RightMove" class="btn btn-primary" value="R'" onclick="MoveEvent('R\'')" />
-        <input type="button" id="UpMove" class="btn btn-primary" value="U" onclick="MoveEvent('U')" />
-        <input type="button" id="UpMove" class="btn btn-primary" value="U'" onclick="MoveEvent('U\'')" />
-        <input type="button" id="DownMove" class="btn btn-primary" value="D" onclick="MoveEvent('D')" />
-        <input type="button" id="DownMove" class="btn btn-primary" value="D'" onclick="MoveEvent('D\'')" />
+        <input type="button" id="BackMove" class="btn btn-primary MoveBtn" value="B" onclick="MoveEvent('B')" />
+        <input type="button" id="BackMove" class="btn btn-primary MoveBtn" value="B'" onclick="MoveEvent('B\'')" />
+        <input type="button" id="FrontMove" class="btn btn-primary MoveBtn" value="F" onclick="MoveEvent('F')" />
+        <input type="button" id="FrontMove" class="btn btn-primary MoveBtn" value="F'" onclick="MoveEvent('F\'')" />
+        <input type="button" id="LeftMove" class="btn btn-primary MoveBtn" value="L" onclick="MoveEvent('L')" />
+        <input type="button" id="LeftMove" class="btn btn-primary MoveBtn" value="L'" onclick="MoveEvent('L\'')" />
+        <input type="button" id="RightMove" class="btn btn-primary MoveBtn" value="R" onclick="MoveEvent('R')" />
+        <input type="button" id="RightMove" class="btn btn-primary MoveBtn" value="R'" onclick="MoveEvent('R\'')" />
+        <input type="button" id="UpMove" class="btn btn-primary MoveBtn" value="U" onclick="MoveEvent('U')" />
+        <input type="button" id="UpMove" class="btn btn-primary MoveBtn" value="U'" onclick="MoveEvent('U\'')" />
+        <input type="button" id="DownMove" class="btn btn-primary MoveBtn" value="D" onclick="MoveEvent('D')" />
+        <input type="button" id="DownMove" class="btn btn-primary MoveBtn" value="D'" onclick="MoveEvent('D\'')" />
     </div>
     <div id="informations">
         <h4>Informations sur les notations</h4>
@@ -102,7 +102,7 @@
         </div>
         <div class="alert alert-secondary" role="alert" id="infos"> -->
 
-        </div>
+    </div>
     </div>
     <div id="melangeInput">
         <div class="input-group">
@@ -115,7 +115,7 @@
     </div>
     <script src="./js/three.min.js"></script>
     <!-- <script type="module" src="../js/three.module.js"></script>  -->
-    <script src="./js/OrbitControls.js"></script> 
+    <script src="./js/OrbitControls.js"></script>
     <!-- <script type="module" src="./js/TrackballControls.js"></script> -->
     <script>
         // rendu
@@ -160,7 +160,7 @@
         // Contrôle des mouvements de souris
         var controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.minDistance = 10;
-        controls.maxDistance = 30;  
+        controls.maxDistance = 30;
         // let TrackbackControls = dynamicallyImportPackage();
         // var controls = new THREE.TrackballControls(camera, renderer.domElement);
         // controls.minDistance = 10;
@@ -224,7 +224,7 @@
             scene.add(cubePiece);
             pieces.push(cubePiece);
             cubePiece.translateX(0.5);
-            cubePiece.position.set(x,y,z);
+            cubePiece.position.set(x, y, z);
             cubePiece.name = name;
             cubePiece.cubeType = cubeType;
             // cubePiece.add(new THREE.AxesHelper(1.5));
@@ -240,8 +240,8 @@
         }
 
         //#region Création et positionnement des pièces du rubik's cube
-        var cubePiece1 = CreateCubePiece("", 0, 0, 0, "cubePiece1", cubeType.Other); 
-        var cubePiece2 = CreateCubePiece("B", 0, 0, -1.02,"cubePiece2",cubeType.Center); // Back 
+        var cubePiece1 = CreateCubePiece("", 0, 0, 0, "cubePiece1", cubeType.Other);
+        var cubePiece2 = CreateCubePiece("B", 0, 0, -1.02, "cubePiece2", cubeType.Center); // Back 
         var cubePiece3 = CreateCubePiece("F", 0, 0, 1.02, "cubePiece3", cubeType.Center); // Front
         var cubePiece4 = CreateCubePiece("RF", 1.02, 0, 1.02, "cubePiece4", cubeType.Edge);
         var cubePiece5 = CreateCubePiece("LF", -1.02, 0, 1.02, "cubePiece5", cubeType.Edge);
@@ -386,6 +386,7 @@
 
         // fonction pour créer un groupe à la volée
         function GroupFace(face) {
+            var group;
             switch (face) {
                 case "B":
                     pieces.forEach(element => {
@@ -397,6 +398,7 @@
                             }
                         });
                     });
+                    group = BackGroup;
                     break;
                 case "F":
                     pieces.forEach(element => {
@@ -408,6 +410,7 @@
                             }
                         });
                     });
+                    group = FrontGroup;
                     break;
                 case "U":
                     pieces.forEach(element => {
@@ -419,6 +422,7 @@
                             }
                         });
                     });
+                    group = UpGroup;
                     break;
                 case "D":
                     pieces.forEach(element => {
@@ -430,6 +434,7 @@
                             }
                         });
                     });
+                    group = DownGroup;
                     break;
                 case "R":
                     pieces.forEach(element => {
@@ -441,6 +446,7 @@
                             }
                         });
                     });
+                    group = RightGroup;
                     break;
                 case "L":
                     pieces.forEach(element => {
@@ -452,10 +458,12 @@
                             }
                         });
                     });
+                    group = LeftGroup;
                     break;
                 default:
                     break;
             }
+            return group;
         }
 
         // fonction de mise à jour de la position et de la rotation de toutes les pièces du cube
@@ -512,7 +520,10 @@
         // onclick des différents boutons de mouvement
         var anAnimationHaveToStart = "";
         var movement = "";
+        var btns = document.getElementsByClassName("MoveBtn");
+        var listGroup = [];
         function MoveEvent(move) {
+            removeBoxesHelper();
             movement = move;
             anAnimationHaveToStart = move;
         }
@@ -566,7 +577,7 @@
             // console.log("x: " + element.position.x + ", y: " + element.position.y + ", z: " + element.position.z);
         }
 
-        function UpdateRotationPiece(element) { 
+        function UpdateRotationPiece(element) {
             if (lastMove == "B") {
                 // var angle = element.rotation.z + Math.PI / 2;
                 // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
@@ -846,6 +857,27 @@
             isMelange = true;
             nextMove = true;
         }
+ 
+        function removeBoxesHelper(){ 
+            if(listGroup != null && listGroup.length > 0){
+                listGroup.forEach(element => {
+                    scene.remove(element);
+                }); 
+            }
+        }
+
+        for (i = 0; i < btns.length; i++){
+            btns[i].addEventListener("mouseenter", function( event ) {  
+                GroupFace(event.target.attributes["value"].value.replace('\'', '')).children.forEach(element => {
+                    var boxHelper = new THREE.BoxHelper(element, 0xffff00 );
+                    listGroup.push(boxHelper);
+                    scene.add(boxHelper);
+                });
+            });
+            btns[i].addEventListener("mouseleave", function( event ) {
+                removeBoxesHelper();
+            });
+        }
 
         var vitesse = 0.1;
         var animationIsRunning = false;
@@ -862,6 +894,7 @@
                 }
             }
             FaireRotation();
+
             controls.update();
             requestAnimationFrame(animate);
             renderer.render(scene, camera);
