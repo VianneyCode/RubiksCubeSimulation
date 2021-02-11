@@ -94,12 +94,12 @@
             <li>U': tourner la face du haut de 90° dans le sens anti-horaire</li>
             <li>F2: tourner la face de devant de 180°</li>
         </ul>
-        <div id="checkboxContainer">
+        <!-- <div id="checkboxContainer">
             <input type="checkbox" class="form-check-input" id="informationsDisplayer"
                 onclick="DisplayInformations()" />
             <label for="informationsDisplayer">Afficher les informations</label>
         </div>
-        <div class="alert alert-secondary" role="alert" id="infos">
+        <div class="alert alert-secondary" role="alert" id="infos"> -->
 
         </div>
     </div>
@@ -516,44 +516,44 @@
             anAnimationHaveToStart = move;
         }
 
+        // affichage de la position, du nom et de la rotation de la pièces cliqué
+        // var raycaster = new THREE.Raycaster();
+        // function getSelectionneLePlusProche(position) {
+        //     raycaster.setFromCamera(position, camera);
+        //     var selectionnes = raycaster.intersectObjects(pieces);
+        //     if (selectionnes.length) {
+        //         return selectionnes[0].object;
+        //     }
+        // }
+        // function onMouseClick(event) {
+        //     var position = new THREE.Vector2();
+        //     var domRect = renderer.domElement.getBoundingClientRect();
+        //     position.x = (event.clientX / domRect.width) * 2 - 1 + domRect.left;
+        //     position.y = - (event.clientY / domRect.height) * 2 + 1 + domRect.top;
 
-        var raycaster = new THREE.Raycaster();
-        function getSelectionneLePlusProche(position) {
-            raycaster.setFromCamera(position, camera);
-            var selectionnes = raycaster.intersectObjects(pieces);
-            if (selectionnes.length) {
-                return selectionnes[0].object;
-            }
-        }
-        function onMouseClick(event) {
-            var position = new THREE.Vector2();
-            var domRect = renderer.domElement.getBoundingClientRect();
-            position.x = (event.clientX / domRect.width) * 2 - 1 + domRect.left;
-            position.y = - (event.clientY / domRect.height) * 2 + 1 + domRect.top;
-
-            var object = getSelectionneLePlusProche(position);
-            // console.log(object);
-            if (object != null) {
-                var infos = document.getElementById("infos");
-                var quaternion = new THREE.Quaternion();
-                object.getWorldQuaternion(quaternion);
-                var rotation = new THREE.Euler().setFromQuaternion(quaternion);
-                infos.innerHTML = "<p><b>Nom:</b> " + object.name + "</p>" +
-                    "<p><b>position:</b> x=" + object.position.x + ", y=" + object.position.y + ", z=" + object.position.z + "</p>" +
-                    "<p><b>rotation:</b> x=" + Math.round(THREE.Math.radToDeg(rotation.x)) + ", y=" + Math.round(THREE.Math.radToDeg(rotation.y)) + ", z=" + Math.round(THREE.Math.radToDeg(rotation.z));
-            }
-        }
-        renderer.domElement.addEventListener('click', onMouseClick);
-        function DisplayInformations() {
-            var checkBox = document.getElementById("informationsDisplayer");
-            var infos = document.getElementById("infos");
-            if (checkBox.checked == true) {
-                infos.rem
-                infos.style.display = "block";
-            } else {
-                infos.style.display = "none";
-            }
-        }
+        //     var object = getSelectionneLePlusProche(position);
+        //     // console.log(object);
+        //     if (object != null) {
+        //         var infos = document.getElementById("infos");
+        //         var quaternion = new THREE.Quaternion();
+        //         object.getWorldQuaternion(quaternion);
+        //         var rotation = new THREE.Euler().setFromQuaternion(quaternion);
+        //         infos.innerHTML = "<p><b>Nom:</b> " + object.name + "</p>" +
+        //             "<p><b>position:</b> x=" + object.position.x + ", y=" + object.position.y + ", z=" + object.position.z + "</p>" +
+        //             "<p><b>rotation:</b> x=" + Math.round(THREE.Math.radToDeg(rotation.x)) + ", y=" + Math.round(THREE.Math.radToDeg(rotation.y)) + ", z=" + Math.round(THREE.Math.radToDeg(rotation.z));
+        //     }
+        // }
+        // renderer.domElement.addEventListener('click', onMouseClick);
+        // function DisplayInformations() {
+        //     var checkBox = document.getElementById("informationsDisplayer");
+        //     var infos = document.getElementById("infos");
+        //     if (checkBox.checked == true) {
+        //         infos.rem
+        //         infos.style.display = "block";
+        //     } else {
+        //         infos.style.display = "none";
+        //     }
+        // }
 
 
         var lastMove = "";
