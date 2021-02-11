@@ -174,7 +174,7 @@
 
         var pieces = [];
         // fonction pour créer une pièce du rubik's cube
-        function CreateCubePiece(facesColors) {
+        function CreateCubePiece(facesColors, x, y, z, name, cubeType) {
             var cubePieceGeometry = new THREE.BoxGeometry(1, 1, 1);
             var rightColor = 0x000000;
             var leftColor = 0x000000;
@@ -223,6 +223,9 @@
             scene.add(cubePiece);
             pieces.push(cubePiece);
             cubePiece.translateX(0.5);
+            cubePiece.position.set(x,y,z);
+            cubePiece.name = name;
+            cubePiece.cubeType = cubeType;
             // cubePiece.add(new THREE.AxesHelper(1.5));
             return cubePiece;
         }
@@ -236,114 +239,33 @@
         }
 
         //#region Création et positionnement des pièces du rubik's cube
-        var cubePiece1 = CreateCubePiece("");
-        cubePiece1.position.set(0, 0, 0);
-        cubePiece1.name = "cubePiece1";
-        cubePiece1.cubeType = cubeType.Other;
-        var cubePiece2 = CreateCubePiece("B");
-        cubePiece2.position.set(0, 0, -1.02); // Back
-        cubePiece2.name = "cubePiece2";
-        cubePiece2.cubeType = cubeType.Center;
-        var cubePiece3 = CreateCubePiece("F");
-        cubePiece3.position.set(0, 0, 1.02); // Front
-        cubePiece3.name = "cubePiece3";
-        cubePiece3.cubeType = cubeType.Center;
-        var cubePiece4 = CreateCubePiece("RF");
-        cubePiece4.position.set(1.02, 0, 1.02);
-        cubePiece4.name = "cubePiece4";
-        cubePiece4.cubeType = cubeType.Edge;
-        var cubePiece5 = CreateCubePiece("LF");
-        cubePiece5.position.set(-1.02, 0, 1.02);
-        cubePiece5.name = "cubePiece5";
-        cubePiece5.cubeType = cubeType.Edge;
-        var cubePiece6 = CreateCubePiece("L");
-        cubePiece6.position.set(-1.02, 0, 0); // Left
-        cubePiece6.name = "cubePiece6";
-        cubePiece6.cubeType = cubeType.Center;
-        var cubePiece7 = CreateCubePiece("R");
-        cubePiece7.position.set(1.02, 0, 0); // Right
-        cubePiece7.name = "cubePiece7";
-        cubePiece7.cubeType = cubeType.Center;
-        var cubePiece8 = CreateCubePiece("RB");
-        cubePiece8.position.set(1.02, 0, -1.02);
-        cubePiece8.name = "cubePiece8";
-        cubePiece8.cubeType = cubeType.Edge;
-        var cubePiece9 = CreateCubePiece("LB");
-        cubePiece9.position.set(-1.02, 0, -1.02);
-        cubePiece9.name = "cubePiece9";
-        cubePiece9.cubeType = cubeType.Edge;
-        var cubePiece10 = CreateCubePiece("U");
-        cubePiece10.position.set(0, 1.02, 0); // Up
-        cubePiece10.name = "cubePiece10";
-        cubePiece10.cubeType = cubeType.Center;
-        var cubePiece11 = CreateCubePiece("UB");
-        cubePiece11.position.set(0, 1.02, -1.02);
-        cubePiece11.name = "cubePiece11";
-        cubePiece11.cubeType = cubeType.Edge;
-        var cubePiece12 = CreateCubePiece("UF");
-        cubePiece12.position.set(0, 1.02, 1.02);
-        cubePiece12.name = "cubePiece12";
-        cubePiece12.cubeType = cubeType.Edge;
-        var cubePiece13 = CreateCubePiece("RFU");
-        cubePiece13.position.set(1.02, 1.02, 1.02);
-        cubePiece13.name = "cubePiece13";
-        cubePiece13.cubeType = cubeType.Corner;
-        var cubePiece14 = CreateCubePiece("LFU");
-        cubePiece14.position.set(-1.02, 1.02, 1.02);
-        cubePiece14.name = "cubePiece14";
-        cubePiece14.cubeType = cubeType.Corner;
-        var cubePiece15 = CreateCubePiece("LU");
-        cubePiece15.position.set(-1.02, 1.02, 0);
-        cubePiece15.name = "cubePiece15";
-        cubePiece15.cubeType = cubeType.Edge;
-        var cubePiece16 = CreateCubePiece("RU");
-        cubePiece16.position.set(1.02, 1.02, 0);
-        cubePiece16.name = "cubePiece16";
-        cubePiece16.cubeType = cubeType.Edge;
-        var cubePiece17 = CreateCubePiece("RBU");
-        cubePiece17.position.set(1.02, 1.02, -1.02);
-        cubePiece17.name = "cubePiece17";
-        cubePiece17.cubeType = cubeType.Corner;
-        var cubePiece18 = CreateCubePiece("LBU");
-        cubePiece18.position.set(-1.02, 1.02, -1.02);
-        cubePiece18.name = "cubePiece18";
-        cubePiece18.cubeType = cubeType.Corner;
-        var cubePiece19 = CreateCubePiece("D");
-        cubePiece19.position.set(0, -1.02, 0); // Down
-        cubePiece19.name = "cubePiece19";
-        cubePiece19.cubeType = cubeType.Center;
-        var cubePiece20 = CreateCubePiece("BD");
-        cubePiece20.position.set(0, -1.02, -1.02);
-        cubePiece20.name = "cubePiece20";
-        cubePiece20.cubeType = cubeType.Edge;
-        var cubePiece21 = CreateCubePiece("FD");
-        cubePiece21.position.set(0, -1.02, 1.02);
-        cubePiece21.name = "cubePiece21";
-        cubePiece21.cubeType = cubeType.Edge;
-        var cubePiece22 = CreateCubePiece("RFD");
-        cubePiece22.position.set(1.02, -1.02, 1.02);
-        cubePiece22.name = "cubePiece22";
-        cubePiece22.cubeType = cubeType.Corner;
-        var cubePiece23 = CreateCubePiece("LFD");
-        cubePiece23.position.set(-1.02, -1.02, 1.02);
-        cubePiece23.name = "cubePiece23";
-        cubePiece23.cubeType = cubeType.Corner;
-        var cubePiece24 = CreateCubePiece("LD");
-        cubePiece24.position.set(-1.02, -1.02, 0);
-        cubePiece24.name = "cubePiece24";
-        cubePiece24.cubeType = cubeType.Edge;
-        var cubePiece25 = CreateCubePiece("RD");
-        cubePiece25.position.set(1.02, -1.02, 0);
-        cubePiece25.name = "cubePiece25";
-        cubePiece25.cubeType = cubeType.Edge;
-        var cubePiece26 = CreateCubePiece("RBD");
-        cubePiece26.position.set(1.02, -1.02, -1.02);
-        cubePiece26.name = "cubePiece26";
-        cubePiece26.cubeType = cubeType.Corner;
-        var cubePiece27 = CreateCubePiece("LBD");
-        cubePiece27.position.set(-1.02, -1.02, -1.02);
-        cubePiece27.name = "cubePiece27";
-        cubePiece27.cubeType = cubeType.Corner;
+        var cubePiece1 = CreateCubePiece("", 0, 0, 0, "cubePiece1", cubeType.Other); 
+        var cubePiece2 = CreateCubePiece("B", 0, 0, -1.02,"cubePiece2",cubeType.Center); // Back 
+        var cubePiece3 = CreateCubePiece("F", 0, 0, 1.02, "cubePiece3", cubeType.Center); // Front
+        var cubePiece4 = CreateCubePiece("RF", 1.02, 0, 1.02, "cubePiece4", cubeType.Edge);
+        var cubePiece5 = CreateCubePiece("LF", -1.02, 0, 1.02, "cubePiece5", cubeType.Edge);
+        var cubePiece6 = CreateCubePiece("L", -1.02, 0, 0, "cubePiece6", cubeType.Center); // Left
+        var cubePiece7 = CreateCubePiece("R", 1.02, 0, 0, "cubePiece7", cubeType.Center); // Right
+        var cubePiece8 = CreateCubePiece("RB", 1.02, 0, -1.02, "cubePiece8", cubeType.Edge);
+        var cubePiece9 = CreateCubePiece("LB", -1.02, 0, -1.02, "cubePiece9", cubeType.Edge);
+        var cubePiece10 = CreateCubePiece("U", 0, 1.02, 0, "cubePiece10", cubeType.Center); // Up
+        var cubePiece11 = CreateCubePiece("UB", 0, 1.02, -1.02, "cubePiece11", cubeType.Edge);
+        var cubePiece12 = CreateCubePiece("UF", 0, 1.02, 1.02, "cubePiece12", cubeType.Edge);
+        var cubePiece13 = CreateCubePiece("RFU", 1.02, 1.02, 1.02, "cubePiece13", cubeType.Corner);
+        var cubePiece14 = CreateCubePiece("LFU", -1.02, 1.02, 1.02, "cubePiece14", cubeType.Corner);
+        var cubePiece15 = CreateCubePiece("LU", -1.02, 1.02, 0, "cubePiece15", cubeType.Edge);
+        var cubePiece16 = CreateCubePiece("RU", 1.02, 1.02, 0, "cubePiece16", cubeType.Edge);
+        var cubePiece17 = CreateCubePiece("RBU", 1.02, 1.02, -1.02, "cubePiece17", cubeType.Corner);
+        var cubePiece18 = CreateCubePiece("LBU", -1.02, 1.02, -1.02, "cubePiece18", cubeType.Corner);
+        var cubePiece19 = CreateCubePiece("D", 0, -1.02, 0, "cubePiece19", cubeType.Center); // Down
+        var cubePiece20 = CreateCubePiece("BD", 0, -1.02, -1.02, "cubePiece20", cubeType.Edge);
+        var cubePiece21 = CreateCubePiece("FD", 0, -1.02, 1.02, "cubePiece21", cubeType.Edge);
+        var cubePiece22 = CreateCubePiece("RFD", 1.02, -1.02, 1.02, "cubePiece22", cubeType.Corner);
+        var cubePiece23 = CreateCubePiece("LFD", -1.02, -1.02, 1.02, "cubePiece23", cubeType.Corner);
+        var cubePiece24 = CreateCubePiece("LD", -1.02, -1.02, 0, "cubePiece24", cubeType.Edge);
+        var cubePiece25 = CreateCubePiece("RD", 1.02, -1.02, 0, "cubePiece25", cubeType.Edge);
+        var cubePiece26 = CreateCubePiece("RBD", 1.02, -1.02, -1.02, "cubePiece26", cubeType.Corner);
+        var cubePiece27 = CreateCubePiece("LBD", -1.02, -1.02, -1.02, "cubePiece27", cubeType.Corner);
         //#endregion
 
         //#region Group definition for cube face rotation
