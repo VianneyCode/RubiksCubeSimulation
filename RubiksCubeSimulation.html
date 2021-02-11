@@ -643,91 +643,114 @@
             // console.log("x: " + element.position.x + ", y: " + element.position.y + ", z: " + element.position.z);
         }
 
-        function UpdateRotationPiece(element) {
-            // element.rotation.order = 'XYZ';
+        function UpdateRotationPiece(element) { 
             if (lastMove == "B") {
                 // var angle = element.rotation.z + Math.PI / 2;
                 // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
                 //     angle = 0;
                 // }
-                element.rotateOnAxis(new THREE.Vector3(0, 0, 1), Math.PI / 2);
+                // var axis = new THREE.Vector3(0, 0, 1).normalize(); 
+                // element.quaternion.setFromAxisAngle(axis, angle);
+                element.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), Math.PI / 2);
                 // element.rotation.set(element.rotation.x, element.rotation.y, angle);
             } else if (lastMove == "B'") {
                 // var angle = element.rotation.z - Math.PI / 2;
                 // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
                 //     angle = 0;   
                 // }
-                element.rotateOnAxis(new THREE.Vector3(0, 0, 1), -Math.PI / 2);
+                // var axis = new THREE.Vector3(0, 0, 1).normalize();
+                // element.quaternion.setFromAxisAngle(axis, angle);
+                element.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), -Math.PI / 2);
                 // element.rotation.set(element.rotation.x, element.rotation.y, angle);
             } else if (lastMove == "F") {
                 // var angle = element.rotation.z - Math.PI / 2;
                 // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
                 //     angle = 0;
                 // }  
-                element.rotateOnAxis(new THREE.Vector3(0, 0, 1), -Math.PI / 2);
+                // var axis = new THREE.Vector3(0, 0, 1).normalize();
+                // element.quaternion.setFromAxisAngle(axis, angle);
+                element.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), -Math.PI / 2);
                 // element.rotation.set(element.rotation.x, element.rotation.y, angle);
             } else if (lastMove == "F'") {
                 // var angle = element.rotation.z + Math.PI / 2;
                 // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
                 //     angle = 0;
                 // }
-                element.rotateOnAxis(new THREE.Vector3(0, 0, 1), Math.PI / 2);
+                // var axis = new THREE.Vector3(0, 0, 1).normalize();
+                // element.quaternion.setFromAxisAngle(axis, angle);
+                element.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), Math.PI / 2);
                 // element.rotation.set(element.rotation.x, element.rotation.y, angle);
             } else if (lastMove == "U") {
                 // var angle = element.rotation.y - Math.PI / 2;
                 // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
                 //     angle = 0;
                 // }
-                element.rotateOnAxis(new THREE.Vector3(0, 1, 0), -Math.PI / 2);
+                // var axis = new THREE.Vector3(0, 1, 0).normalize();
+                // element.quaternion.setFromAxisAngle(axis, angle);
+                element.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), -Math.PI / 2);
                 // element.rotation.set(element.rotation.x, angle, element.rotation.z);
             } else if (lastMove == "U'") {
                 // var angle = element.rotation.y + Math.PI / 2;
                 // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
                 //     angle = 0;
                 // }
-                element.rotateOnAxis(new THREE.Vector3(0, 1, 0), Math.PI / 2);
+                // var axis = new THREE.Vector3(0, 1, 0).normalize();
+                // element.quaternion.setFromAxisAngle(axis, angle);
+                element.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), Math.PI / 2);
                 // element.rotation.set(element.rotation.x, angle, element.rotation.z);
             } else if (lastMove == "D") {
                 // var angle = element.rotation.y + Math.PI / 2;
                 // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
                 //     angle = 0;
                 // }
-                element.rotateOnAxis(new THREE.Vector3(0, 1, 0), Math.PI / 2);
+                // var axis = new THREE.Vector3(0, 1, 0).normalize();
+                // element.quaternion.setFromAxisAngle(axis, angle);
+                element.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), Math.PI / 2);
                 // element.rotation.set(element.rotation.x, angle, element.rotation.z);
             } else if (lastMove == "D'") {
                 // var angle = element.rotation.y - Math.PI / 2;
                 // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
                 //     angle = 0;
                 // }
-                element.rotateOnAxis(new THREE.Vector3(0, 1, 0), -Math.PI / 2);
+                // var axis = new THREE.Vector3(0, 1, 0).normalize();
+                // element.quaternion.setFromAxisAngle(axis, angle);
+                element.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), -Math.PI / 2);
                 // element.rotation.set(element.rotation.x, angle, element.rotation.z);
             } else if (lastMove == "R") {
                 // var angle = element.rotation.x - Math.PI / 2;
                 // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
                 //     angle = 0;
                 // }
-                element.rotateOnAxis(new THREE.Vector3(1, 0, 0), -Math.PI / 2);
+                // var axis = new THREE.Vector3(1, 0, 0).normalize();
+                // element.quaternion.setFromAxisAngle(axis, angle);
+                element.rotateOnWorldAxis(new THREE.Vector3(1, 0, 0), -Math.PI / 2);
                 // element.rotation.set(angle, element.rotation.y, element.rotation.z);
             } else if (lastMove == "R'") {
                 // var angle = element.rotation.x + Math.PI / 2;
                 // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
                 //     angle = 0;
                 // }
-                element.rotateOnAxis(new THREE.Vector3(1, 0, 0), Math.PI / 2);
+                // var axis = new THREE.Vector3(1, 0, 0).normalize(); 
+                // element.quaternion.setFromAxisAngle(axis, angle);
+                element.rotateOnWorldAxis(new THREE.Vector3(1, 0, 0), Math.PI / 2);
                 // element.rotation.set(angle, element.rotation.y, element.rotation.z);
             } else if (lastMove == "L") {
                 // var angle = element.rotation.x + Math.PI / 2;
                 // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
                 //     angle = 0;
                 // }
-                element.rotateOnAxis(new THREE.Vector3(1, 0, 0), Math.PI / 2);
+                // var axis = new THREE.Vector3(1, 0, 0).normalize();
+                // element.quaternion.setFromAxisAngle(axis, angle);
+                element.rotateOnWorldAxis(new THREE.Vector3(1, 0, 0), Math.PI / 2);
                 // element.rotation.set(angle, element.rotation.y, element.rotation.z);
             } else if (lastMove == "L'") {
                 // var angle = element.rotation.x - Math.PI / 2;
                 // if (Math.abs(THREE.Math.radToDeg(angle)) == 360) {
                 //     angle = 0;
                 // }
-                element.rotateOnAxis(new THREE.Vector3(1, 0, 0), -Math.PI / 2);
+                // var axis = new THREE.Vector3(1, 0, 0).normalize();
+                // element.quaternion.setFromAxisAngle(axis, angle);
+                element.rotateOnWorldAxis(new THREE.Vector3(1, 0, 0), -Math.PI / 2);
                 // element.rotation.set(angle, element.rotation.y, element.rotation.z);
             }
             // console.log("x: " + THREE.Math.radToDeg(element.rotation.x) + ", y: " + THREE.Math.radToDeg(element.rotation.y) + ", z: " + THREE.Math.radToDeg(element.rotation.z));
