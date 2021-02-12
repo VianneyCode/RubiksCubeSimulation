@@ -54,9 +54,7 @@
 <body>
     <div id="actions">
         <input type="button" id="showAxesButton" class="btn btn-primary" value="Afficher les axes"
-            onclick="ShowAxes()" />
-        <input type="button" id="centerCamera" class="btn btn-primary" value="Recentrer la camera"
-            onclick="CenterControls()" />
+            onclick="ShowAxes()" /> 
         <br />
         <br />
         <input type="button" id="BackMove" class="btn btn-primary MoveBtn" value="B" onclick="MoveEvent('B')" />
@@ -166,21 +164,11 @@
         updateViewportSize();
 
         // Contrôle des mouvements de souris
-        // var controls = new THREE.OrbitControls(camera, renderer.domElement);
-        // controls.minDistance = 10;
-        // controls.maxDistance = 25;
-        // controls.enablePan = false;
-        // let TrackbackControls = dynamicallyImportPackage();
         var controls = new THREE.TrackballControls(camera, renderer.domElement);
         controls.minDistance = 10;
         controls.maxDistance = 25;
         controls.rotateSpeed = 10;
         controls.mouseButtons.RIGHT = null;
-
-        // function pour recentrer la caméra
-        function CenterControls() {
-            camera.position.set(5,5,15);
-        }
 
         var pieces = [];
         // fonction pour créer une pièce du rubik's cube
