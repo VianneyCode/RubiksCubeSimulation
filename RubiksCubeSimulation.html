@@ -123,6 +123,7 @@
     <script src="./js/three.min.js"></script>
     <!-- <script type="module" src="../js/three.module.js"></script>  -->
     <script src="./js/OrbitControls.js"></script>
+    <!-- <script src="./js/threex.dynamictexture.js"></script> -->
     <!-- <script type="module" src="./js/TrackballControls.js"></script> -->
     <script>
         // rendu
@@ -226,6 +227,7 @@
             cubePieceGeometry.faces[9].color = new THREE.Color(frontColor); // red        Front
             cubePieceGeometry.faces[10].color = new THREE.Color(backColor); // orange     Back
             cubePieceGeometry.faces[11].color = new THREE.Color(backColor); // orange     Back
+            
             var cubePiece = new THREE.Mesh(cubePieceGeometry, new THREE.MeshBasicMaterial({ color: 0xffffff, vertexColors: true }));
             cubePiece.receiveShadow = true;
             scene.add(cubePiece);
@@ -246,17 +248,30 @@
             Other: 4
         }
 
+        var textureLoader = new THREE.TextureLoader();
+        var backTexture = textureLoader.load("images/lettre_b.png");
+        var frontTexture = textureLoader.load("images/lettre_f.png");
+        var upTexture = textureLoader.load("images/lettre_u.png");
+        var downTexture = textureLoader.load("images/lettre_d.png");
+        var rightTexture = textureLoader.load("images/lettre_r.png");
+        var leftTexture = textureLoader.load("images/lettre_l.png");
+ 
         //#region Création et positionnement des pièces du rubik's cube
         var cubePiece1 = CreateCubePiece("", 0, 0, 0, "cubePiece1", cubeType.Other);
         var cubePiece2 = CreateCubePiece("B", 0, 0, -1.02, "cubePiece2", cubeType.Center); // Back 
+        cubePiece2.material.map = backTexture;   
         var cubePiece3 = CreateCubePiece("F", 0, 0, 1.02, "cubePiece3", cubeType.Center); // Front
+        cubePiece3.material.map = frontTexture;    
         var cubePiece4 = CreateCubePiece("RF", 1.02, 0, 1.02, "cubePiece4", cubeType.Edge);
         var cubePiece5 = CreateCubePiece("LF", -1.02, 0, 1.02, "cubePiece5", cubeType.Edge);
         var cubePiece6 = CreateCubePiece("L", -1.02, 0, 0, "cubePiece6", cubeType.Center); // Left
+        cubePiece6.material.map = leftTexture;    
         var cubePiece7 = CreateCubePiece("R", 1.02, 0, 0, "cubePiece7", cubeType.Center); // Right
+        cubePiece7.material.map = rightTexture;    
         var cubePiece8 = CreateCubePiece("RB", 1.02, 0, -1.02, "cubePiece8", cubeType.Edge);
         var cubePiece9 = CreateCubePiece("LB", -1.02, 0, -1.02, "cubePiece9", cubeType.Edge);
         var cubePiece10 = CreateCubePiece("U", 0, 1.02, 0, "cubePiece10", cubeType.Center); // Up
+        cubePiece10.material.map = upTexture;    
         var cubePiece11 = CreateCubePiece("UB", 0, 1.02, -1.02, "cubePiece11", cubeType.Edge);
         var cubePiece12 = CreateCubePiece("UF", 0, 1.02, 1.02, "cubePiece12", cubeType.Edge);
         var cubePiece13 = CreateCubePiece("RFU", 1.02, 1.02, 1.02, "cubePiece13", cubeType.Corner);
@@ -266,6 +281,7 @@
         var cubePiece17 = CreateCubePiece("RBU", 1.02, 1.02, -1.02, "cubePiece17", cubeType.Corner);
         var cubePiece18 = CreateCubePiece("LBU", -1.02, 1.02, -1.02, "cubePiece18", cubeType.Corner);
         var cubePiece19 = CreateCubePiece("D", 0, -1.02, 0, "cubePiece19", cubeType.Center); // Down
+        cubePiece19.material.map = downTexture;    
         var cubePiece20 = CreateCubePiece("BD", 0, -1.02, -1.02, "cubePiece20", cubeType.Edge);
         var cubePiece21 = CreateCubePiece("FD", 0, -1.02, 1.02, "cubePiece21", cubeType.Edge);
         var cubePiece22 = CreateCubePiece("RFD", 1.02, -1.02, 1.02, "cubePiece22", cubeType.Corner);
@@ -468,6 +484,7 @@
                     group = LeftGroup;
                     break;
                 default:
+                    group = null;
                     break;
             }
             return group;
@@ -526,11 +543,8 @@
 
         // onclick des différents boutons de mouvement
         var anAnimationHaveToStart = "";
-        var movement = "";
-        var btns = document.getElementsByClassName("MoveBtn");
-        var listBoxHelper = [];
+        var movement = ""; 
         function MoveEvent(move) {
-            removeBoxesHelper();
             movement = move;
             anAnimationHaveToStart = move;
         }
@@ -581,7 +595,6 @@
             var vector = new THREE.Vector3();
             element.getWorldPosition(vector);
             element.position.set(Math.round(vector.x * 100) / 100, Math.round(vector.y * 100) / 100, Math.round(vector.z * 100) / 100);
-            // console.log("x: " + element.position.x + ", y: " + element.position.y + ", z: " + element.position.z);
         }
 
         function UpdateRotationPiece(element) {
@@ -837,6 +850,13 @@
             }
         }
 
+        function DisableMoveButtons(disabled){
+            var buttons = document.getElementsByClassName("MoveBtn");
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].disabled = disabled;
+            }
+        }
+
         var melange = [];
         var movePossible = ["F", "B", "U", "D", "R", "L", "F'", "B'", "U'", "D'", "R'", "L'", "F2", "B2", "U2", "D2", "R2", "L2"];
         var index = 0;
@@ -861,30 +881,10 @@
                     break;
                 }
             }
+            DisableMoveButtons(true);
             isMelange = true;
             nextMove = true;
-        }
- 
-        function removeBoxesHelper(){ 
-            if(listBoxHelper != null && listBoxHelper.length > 0){
-                listBoxHelper.forEach(element => {
-                    scene.remove(element);
-                }); 
-            }
-        }
-
-        for (i = 0; i < btns.length; i++){
-            btns[i].addEventListener("mouseenter", function( event ) {  
-                GroupFace(event.target.attributes["value"].value.replace('\'', '')).children.forEach(element => {
-                    var boxHelper = new THREE.BoxHelper(element, 0xffff00 );
-                    listBoxHelper.push(boxHelper);
-                    scene.add(boxHelper);
-                });
-            });
-            btns[i].addEventListener("mouseleave", function( event ) {
-                removeBoxesHelper();
-            });
-        }
+        }   
 
         var vitesse = 0.1;
         var animationIsRunning = false;
@@ -898,6 +898,7 @@
                 } else {
                     melange = [];
                     isMelange = false;
+                    DisableMoveButtons(false);
                 }
             }
             FaireRotation();
