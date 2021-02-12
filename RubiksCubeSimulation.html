@@ -124,7 +124,7 @@
     <!-- <script type="module" src="../js/three.module.js"></script>  -->
     <script src="./js/OrbitControls.js"></script>
     <!-- <script src="./js/threex.dynamictexture.js"></script> -->
-    <!-- <script type="module" src="./js/TrackballControls.js"></script> -->
+    <script src="./js/TrackballControls.js"></script>
     <script>
         // rendu
         var renderer = new THREE.WebGLRenderer();
@@ -166,15 +166,16 @@
         updateViewportSize();
 
         // Contrôle des mouvements de souris
-        var controls = new THREE.OrbitControls(camera, renderer.domElement);
+        // var controls = new THREE.OrbitControls(camera, renderer.domElement);
+        // controls.minDistance = 10;
+        // controls.maxDistance = 25;
+        // controls.enablePan = false;
+        // let TrackbackControls = dynamicallyImportPackage();
+        var controls = new THREE.TrackballControls(camera, renderer.domElement);
         controls.minDistance = 10;
         controls.maxDistance = 25;
-        controls.enablePan = false;
-        // let TrackbackControls = dynamicallyImportPackage();
-        // var controls = new THREE.TrackballControls(camera, renderer.domElement);
-        // controls.minDistance = 10;
-        // controls.maxDistance = 20;
-        // controls.rotateSpeed = 15;
+        controls.rotateSpeed = 20;
+        controls.mouseButtons.RIGHT = null;
 
         // function pour recentrer la caméra
         function CenterControls() {
