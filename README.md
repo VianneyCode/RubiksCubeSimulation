@@ -4,9 +4,6 @@
 
 Démo: https://rubiks-cube-simulation.vercel.app/
 
-## Qu'est-ce que c'est ?
-Un simulateur de rubik's cube en 3D que j'ai fait dans le cadre d'un TP.
-
 ## Langage
 * HTML/CSS/JS
 * Librairie [threejs](https://threejs.org/)
